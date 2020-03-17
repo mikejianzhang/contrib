@@ -118,8 +118,9 @@ DOCKERCMD="/docker-cli/docker/docker -H unix:///mnt/docker.sock"
 
 # Command for installing busybox image from the debugger container into the target container.
 INSTALLCMD="set -x;" # Print commands, for debugging.
+INSTALLCMD="${INSTALLCMD} mkdir /docker-cli"
 # Download docker client
-INSTALLCMD="${INSTALLCMD} wget -qO/docker-cli/docker.tgz ${DOCKER_DOWNLOAD_URL}"
+INSTALLCMD="${INSTALLCMD} && wget --no-check-certificate -qO/docker-cli/docker.tgz ${DOCKER_DOWNLOAD_URL}"
 # Extract docker client
 INSTALLCMD="${INSTALLCMD} && tar zxvf /docker-cli/docker.tgz -C /docker-cli"
 # Create the directory structure for the install.
@@ -171,11 +172,11 @@ function cleanup() {
 trap cleanup EXIT
 
 # Wait for the pod to terminate.
-PHASE=$(${KUBECTL} get pod -a ${DEBUGGER_NAME} -o jsonpath='{.status.phase}')
+PHASE=$(${KUBECTL} get pod ${DEBUGGER_NAME} -o jsonpath='{.status.phase}')
 while [[ ! ${PHASE} =~ (Succeeded|Failed) ]]; do
   echo "waiting for debugger pod to complete (currently ${PHASE})..."
   sleep 1
-  PHASE=$(${KUBECTL} get pod -a ${DEBUGGER_NAME} -o jsonpath='{.status.phase}')
+  PHASE=$(${KUBECTL} get pod ${DEBUGGER_NAME} -o jsonpath='{.status.phase}')
 done
 if [[ ${PHASE} == "Failed" ]]; then
   echo 2> "Pod failed:"
