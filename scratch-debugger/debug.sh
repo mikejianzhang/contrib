@@ -130,7 +130,7 @@ INSTALLCMD="${INSTALLCMD} && ${DOCKERCMD} cp /tmp ${CONTAINER_ID}:/"
 # Copy the busybox binary into the install location.
 INSTALLCMD="${INSTALLCMD} && ${DOCKERCMD} cp /bin/busybox ${CONTAINER_ID}:${INSTALL_DIR}/busybox"
 # Tell busybox to install (create symlinks for commands) into the install directory.
-INSTALLCMD="${INSTALLCMD} && ${DOCKERCMD} exec ${CONTAINER_ID} ${INSTALL_DIR}/busybox --install -s ${INSTALL_DIR}"
+INSTALLCMD="${INSTALLCMD} && ${DOCKERCMD} exec --user root ${CONTAINER_ID} ${INSTALL_DIR}/busybox --install -s ${INSTALL_DIR}"
 
 DEBUGGER_NAME=$(${KUBECTL} create -o name -f - <<EOF
 apiVersion: v1
