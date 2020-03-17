@@ -103,3 +103,13 @@ from the container:
 ```
 $ kubectl exec pause -- /tmp/debug-tools/rm -r /tmp/debug-tools
 ```
+
+## Disadvantages of scratch-debugger
+
++ Requires privileged access: If your cluster restricts you from doing hostPath mounts, you can’t get docker.sock into your pod. PodSecurityPolicies allow you to specify such rules.
+
++ Modifies the running pod: You should probably delete the pod and recreate it to discard the changes you made to the pod by adding the busybox binary.
+
++ Does not work on read-only containers: If container has securityContext.readOnlyRootFilesystem: true set on the Pod spec (which is a good practice), adding busybox binary with docker cp will fail.
+
++ Works only for docker container runtime: It would require some changes to make it work with rkt, cri-o and other runtimes.
